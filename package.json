@@ -1,0 +1,39 @@
+{
+  "name": "sern-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --exec babel-node src/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "7.15.5",
+    "@babel/node": "7.15.4",
+    "@babel/preset-env": "7.15.6",
+    "app-root-path": "3.0.0",
+    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "10.0.0",
+    "ejs": "3.1.6",
+    "express": "4.17.1",
+    "lodash": "^4.17.21",
+    "mysql2": "2.3.0",
+    "nodemailer": "6.6.3",
+    "nodemon": "2.0.12",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.26.0",
+    "sequelize-cli": "^6.5.2",
+    "sequelize-typescript": "^2.1.5",
+    "uuid": "8.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.13",
+    "@types/validator": "^13.7.10",
+    "body-parser": "^1.19.0",
+    "morgan": "^1.10.0"
+  }
+}

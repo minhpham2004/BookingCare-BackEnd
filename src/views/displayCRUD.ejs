@@ -1,0 +1,126 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SERN App</title>
+    <link rel="stylesheet" href="../public/css/style.css" />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .topnav {
+        display: flex;
+        overflow: hidden;
+        background-color: #333;
+        justify-content: space-between;
+        padding-right: 2rem;
+      }
+
+      .topnav a {
+        float: left;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+      }
+
+      .topnav a:hover {
+        background-color: #ddd;
+        color: black;
+      }
+
+      .topnav a.active {
+        background-color: #04aa6d;
+        color: white;
+      }
+
+      .create-user-container {
+        padding: 15px;
+        text-align: center;
+      }
+
+      .create-user-container label {
+        display: block;
+      }
+
+      .create-user-container .btn-submit {
+        margin-top: 15px;
+        cursor: pointer;
+      }
+
+      .btn-save {
+        margin-top: 15px;
+        cursor: pointer;
+      }
+
+      .upload-file-container {
+        padding: 15px;
+      }
+
+      .upload-file-container label {
+        display: block;
+      }
+
+      hr {
+        border-top: 3px solid #eee !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="topnav">
+      <div>
+        <a class="active" href="/">Home</a>
+        <a href="/about">About</a>
+      </div>
+      <div>
+        <a href="/crud">Sign up</a>
+      </div>
+    </div>
+
+    <div>
+      <div class="w3-container">
+        <h2>List users Table</h2>
+
+        <table class="w3-table-all w3-hoverable">
+          <thead>
+            <tr class="w3-light-grey">
+              <th>ID</th>
+              <th>Email</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Phone Number</th>
+              <th>Address</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for(let i=0; i < dataTable.length; i++) { %>
+            <tr>
+              <td><%= dataTable[i].id %></td>
+              <td><%= dataTable[i].email%></td>
+              <td><%= dataTable[i].firstName %></td>
+              <td><%= dataTable[i].lastName %></td>
+              <td><%= dataTable[i].phonenumber %></td>
+              <td><%= dataTable[i].address %></td>
+              <td>
+                <a href="/edit-crud?id=<%= dataTable[i].id %>"
+                  ><button style="background-color: orange">Edit</button></a
+                >
+                <a href="/delete-crud?id=<%= dataTable[i].id %>"
+                  ><button style="background-color: red">Delete</button></a
+                >
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
