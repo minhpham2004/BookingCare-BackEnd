@@ -19,7 +19,7 @@ const sendSimpleEmail = async (data) => {
     let mailOptions = {
         from: 'Minh Pham 👻 <ngocminhpham2004hn@gmail.com>', // sender address
         to: data.receiverEmail, // list of receiverssubject: "Hello ✔", // Subject line
-        text: "Thông tin đặt lịch khám bệnh ", // plain text body
+        text: "Thông tin đặt lịch khám bệnh", // plain text body
         html: getBodyHTMLEmail(data)
 
     }
@@ -37,7 +37,7 @@ const getBodyHTMLEmail = (data) => {
     let result = ''
     if (data.language === 'vi') {
         result =
-        `
+            `
         <h3>Xin chào ${data.patientName} </h3>
         <p>Bạn nhận được email này vì đã đặt lịch khám bệnh online qua chúng tôi</p>
         <p>Thông tin đặt lịch khám bệnh: </p>
@@ -52,7 +52,7 @@ const getBodyHTMLEmail = (data) => {
     }
     if (data.language === 'en') {
         result =
-        `
+            `
         <h3>Dear ${data.patientName} </h3>
         <p>You receive this email as having booked online via our website</p>
         <p>Appointment information: </p>
@@ -68,7 +68,63 @@ const getBodyHTMLEmail = (data) => {
     return result
 }
 
+const sendAttachment = async (dataSend) => {
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_APP,
+            pass: process.env.MAIL_APP_PASSWORD,
+        },
+    });
+
+    let mailOptions = {
+        from: 'Minh Pham 👻 <ngocminhpham2004hn@gmail.com>', // sender address
+        to: dataSend.email, // list of receiverssubject: "Hello ✔", // Subject line
+        text: "Kết quả đặt lịch khám bệnh", // plain text body
+        html: getBodyHTMLEmailRemedy(dataSend),
+        attachments: [
+            {
+                filename: `remedy-${dataSend.patientId}-${new Date().getTime()}.png`,
+                content: dataSend.imgBase64.split("base64,")[1],
+                encoding: 'base64'
+            }
+        ]
+    }
+
+    await transporter.sendMail(mailOptions, function (err, res) {
+        if (err) {
+            console.log('Error');
+        } else {
+            console.log('Email sent')
+        }
+    })
+}
+
+const getBodyHTMLEmailRemedy = (data) => {
+    let result = ''
+    if (data.language === 'vi') {
+        result =
+            `
+        <h3>Xin chào ${data.patientName}!</h3>
+        <p>Bạn nhận được email này vì đã đặt lịch khám bệnh online thành công</p>
+        <p>Thông tin đơn thuốc/hóa đơn được gửi trong file đính kém</p>
+        <div>Xin chân thành cảm ơn!</div>
+        `
+    }
+    if (data.language === 'en') {
+        result =
+            `
+        <h3>Dear ${data.patientName}!</h3>
+        <p>You receive this email as having booked online successfully</p>
+        <p>Information related to your remedy is sent in the attached file below</p>
+        
+        <div>Best regards!</div>
+        `
+    }
+    return result
+}
 
 module.exports = {
-    sendSimpleEmail
+    sendSimpleEmail,
+    sendAttachment
 }

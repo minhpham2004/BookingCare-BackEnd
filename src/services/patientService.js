@@ -35,6 +35,10 @@ const postBookAppointment = (data) => {
                     where: { email: data.email },
                     defaults: {
                         email: data.email,
+                        firstName: data.fullName,
+                        gender: data.selectedGender,
+                        phonenumber: data.phoneNumber,
+                        address: data.address,
                         roleId: 'R3'
                     }
                 });

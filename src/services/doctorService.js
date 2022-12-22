@@ -1,6 +1,7 @@
 import db from "../models/index"
 require('dotenv').config()
 import _ from 'lodash'
+import emailService from '../services/emailService'
 
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE
 
@@ -92,6 +93,7 @@ const saveDoctorDetailInfo = (inputData) => {
                         where: { doctorId: inputData.doctorId },
                         raw: false
                     })
+
                     if (doctorMarkdown) {
                         doctorMarkdown.contentMarkdown = inputData.contentMarkdown;
                         doctorMarkdown.contentHTML = inputData.contentHTML;
@@ -118,6 +120,7 @@ const saveDoctorDetailInfo = (inputData) => {
                     doctorInfo.addressClinic = inputData.addressClinic
                     doctorInfo.nameClinic = inputData.nameClinic
                     doctorInfo.specialtyId = inputData.specialtyId
+                    doctorInfo.clinicId = inputData.clinicId
                     doctorInfo.note = inputData.note
 
                     await doctorInfo.save()
@@ -131,6 +134,7 @@ const saveDoctorDetailInfo = (inputData) => {
                         addressClinic: inputData.addressClinic,
                         nameClinic: inputData.nameClinic,
                         specialtyId: inputData.specialtyId,
+                        clinicId: inputData.clinicId,
                         note: inputData.note
                     })
                 }
@@ -375,6 +379,91 @@ const getProfileDoctorById = (doctorId) => {
     })
 }
 
+const getListPatientForDoctor = (doctorId, date) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!doctorId || !date) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing required params'
+                })
+            } else {
+                const data = await db.Booking.findAll({
+                    where: {
+                        statusId: 'S2',
+                        doctorId: doctorId,
+                        date: date
+                    },
+                    include: [
+                        {
+                            model: db.User, as: 'patientData',
+                            attributes: ['email', 'firstName', 'address', 'gender'],
+                            include: [
+                                {
+                                    model: db.Allcode, as: 'genderData', attributes: ['valueEn', 'valueVi']
+                                }
+                            ]
+
+                        },
+                        {
+                            model: db.Allcode, as: 'timeTypeDataPatient', attributes: ['valueEn', 'valueVi']
+                        }
+                    ],
+                    raw: false,
+                    nest: true
+                })
+
+                resolve({
+                    errCode: 0,
+                    errMessage: 'ok',
+                    data: data,
+                })
+            }
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const sendRemedy = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!data.email || !data.patientId || !data.doctorId || !data.timeType) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing required params'
+                })
+            } else {
+                //update patient status
+                const appointment = await db.Booking.findOne({
+                    where: {
+                        doctorId: data.doctorId,
+                        patientId: data.patientId,
+                        timeType: data.timeType,
+                        statusId: 'S2'
+                    },
+                    raw: false
+                })
+
+                if (appointment) {
+                    appointment.statusId = 'S3'
+                    await appointment.save()
+                }
+
+                //send email remedy
+                await emailService.sendAttachment(data)
+                
+                resolve({
+                    errCode: 0,
+                    errMessage: 'ok'
+                })
+            }
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 module.exports = {
     getTopDoctorHome,
     getAllDoctors,
@@ -383,5 +472,7 @@ module.exports = {
     bulkCreateSchedule,
     getScheduleByDate,
     getExtraInfoDoctorById,
-    getProfileDoctorById
+    getProfileDoctorById,
+    getListPatientForDoctor,
+    sendRemedy
 }
