@@ -9,7 +9,6 @@ const createSpecialty = (data) => {
                     errMessage: "Missing required parameter"
                 })
             } else {
-                console.log(data.image)
                 await db.Specialty.create({
                     name: data.name,
                     image: data.image,

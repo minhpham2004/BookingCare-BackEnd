@@ -1,6 +1,7 @@
 import db from '../models/index'
 import emailService from '../services/emailService'
 import { v4 as uuidv4 } from 'uuid'
+const { Op } = require("sequelize");
 
 const buildUrlEmail = (doctorId, token) => {
     let result = ''
@@ -16,7 +17,7 @@ const postBookAppointment = (data) => {
             if (!data.email || !data.doctorId || !data.date || !data.timeType) {
                 resolve({
                     errCode: 1,
-                    errMessage: "Missing required parameter"
+                    errMessage: "Missing required parameter rrrr"
                 })
             } else {
                 const token = uuidv4()
@@ -46,7 +47,13 @@ const postBookAppointment = (data) => {
                 //create a booking record
                 if (user && user[0]) {
                     await db.Booking.findOrCreate({
-                        where: { patientId: user[0].id },
+                        where: {
+                            patientId: user[0].id,
+                            [Op.or]: [
+                                { statusId: 'S1' },
+                                { statusId: 'S2' }
+                            ]
+                        },
                         defaults: {
                             statusId: 'S1',
                             doctorId: data.doctorId,
@@ -60,7 +67,7 @@ const postBookAppointment = (data) => {
 
                 resolve({
                     errCode: 0,
-                    errMessage: 'Save user information succeed!',
+                    errMessage: 'Post book appointment succeed!',
                 })
             }
         } catch (e) {
@@ -90,7 +97,7 @@ const postVerifyBookAppointment = (data) => {
                 if (appointment) {
                     appointment.statusId = 'S2'
                     await appointment.save()
-                    
+
                     resolve({
                         errCode: 0,
                         errMessage: 'Update appointment status succeed'
